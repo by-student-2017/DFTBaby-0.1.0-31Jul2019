@@ -17,7 +17,4 @@
 4. ./install.sh
 
 
-Maybe, Ubuntu 20.04 LTS and Ubuntu 18.04 LTS could do it.
-
-
 -----
