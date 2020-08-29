@@ -410,11 +410,73 @@ def potassium():
     atomdft.saveSolution(fh)
     fh.close()
 
+# test version !!!
+def calcium():
+    energy_range = list(linspace(-160.0, -40.00, 200)) \
+                  +list(linspace(-40, -13.0, 200)) \
+                  +list(linspace(-13.0, -2.5, 200)) \
+                  +list(linspace(-2.5, 1, 200))
+
+    Z = 20
+    Nelec = 20
+    atomdft = PseudoAtomDFT(Z,Nelec,numerov_conv,en_conv, grid_spacing="exponential", r0=confinement_radii_byZ[Z])
+    # in calcium 4s is filled before 3d: [Ar] 4s^2
+    occupation = [occ for occ in occupation_numbers(Nelec)]
+    assert occupation[-1] == (2, 3-1, 2) # 2e in 3d
+    occupation[-1] = (0,3-1,2)     # put 0e in 3d
+    occupation.append( (2,4-1,0) ) # and 2e in 4s
+    atomdft.setOccupation(occupation)
+    atomdft.setRadialGrid(rmin, rmax_4th_row, Npts_4th_row)
+    try:
+        from confined_pseudo_atoms import k
+        atomdft.initialDensityGuess((k.r, float(Nelec)/float(k.Nelec) * k.radial_density))
+        #from confined_pseudo_atoms import ca
+        #atomdft.initialDensityGuess((ca.r, ca.radial_density))
+    except ImportError:
+        atomdft.initialDensityGuess()
+    atomdft.setEnergyRange(energy_range)
+    atomdft.solveKohnSham()
+    fh = open(orbdir + "ca.py", "w")
+    atomdft.saveSolution(fh)
+    fh.close()
+
+# test version !!!
+def scandium():
+    energy_range = list(linspace(-200.0, -100.0, 200)) \
+        + list(linspace(-100.0, -15.5, 200)) \
+        + list(linspace(-15.5, -4.0, 400)) \
+        + list(linspace(-4.0, 5.0, 200)) \
+    # equidistant grid, use larger grid for heavy atoms
+              
+    Z = 21
+    Nelec = 21
+    atomdft = PseudoAtomDFT(Z,Nelec,numerov_conv,100*en_conv, grid_spacing="exponential", r0=confinement_radii_byZ[Z])
+    # scandium has the electron configuration: [Ar] 3d^1 4s^2
+    occupation = [occ for occ in occupation_numbers(Nelec)]
+    assert occupation[-1] == (3,3-1,2) # 3e in 3d
+    occupation[-1] = (1,3-1,2)     # put 1e in 3d
+    occupation.append( (2,4-1,0) ) # and 2e in 4s
+    atomdft.setOccupation(occupation)
+    atomdft.setRadialGrid(0.0000004, 16.0, 6000)
+
+    try:
+        from confined_pseudo_atoms import ca
+        atomdft.initialDensityGuess((ca.r, float(Nelec)/float(ca.Nelec) * ca.radial_density))
+        #from confined_pseudo_atoms import sc
+        #satomdft.initialDensityGuess((sc.r, sc.radial_density))
+    except ImportError:
+        atomdft.initialDensityGuess()
+    atomdft.setEnergyRange(energy_range)
+    atomdft.solveKohnSham()
+    fh = open(orbdir + "sc.py", "w")
+    atomdft.saveSolution(fh)
+    fh.close()
+
 def titanium():
-    energy_range = list(linspace(-400.0, -200.0, 200)) \
-        + list(linspace(-200.0, -30.0, 200)) \
-        + list(linspace(-30.0, -5.0, 400)) \
-        + list(linspace(-5.0, 5.0, 200)) \
+    energy_range = list(linspace(-230.0, -100.0, 200)) \
+        + list(linspace(-100.0, -18.0, 200)) \
+        + list(linspace(-18.0, -4.0, 400)) \
+        + list(linspace(-4.0, 5.0, 200)) \
     # equidistant grid, use larger grid for heavy atoms
               
     Z = 22
@@ -429,13 +491,111 @@ def titanium():
     atomdft.setRadialGrid(0.0000004, 16.0, 6000)
 
     try:
-        from confined_pseudo_atoms import ti
-        atomdft.initialDensityGuess((ti.r, ti.radial_density))
+        from confined_pseudo_atoms import sc
+        atomdft.initialDensityGuess((sc.r, float(Nelec)/float(sc.Nelec) * sc.radial_density))
+        #from confined_pseudo_atoms import ti
+        #atomdft.initialDensityGuess((ti.r, ti.radial_density))
     except ImportError:
         atomdft.initialDensityGuess()
     atomdft.setEnergyRange(energy_range)
     atomdft.solveKohnSham()
     fh = open(orbdir + "ti.py", "w")
+    atomdft.saveSolution(fh)
+    fh.close()
+    
+# test version !!!
+def vanadium():
+    energy_range = list(linspace(-250.0, -200.0, 200)) \
+        + list(linspace(-200.0, -15.0, 200)) \
+        + list(linspace(-15.0, -5.0, 400)) \
+        + list(linspace(-5.0, 5.0, 200)) \
+    # equidistant grid, use larger grid for heavy atoms
+              
+    Z = 23
+    Nelec = 23
+    atomdft = PseudoAtomDFT(Z,Nelec,numerov_conv,100*en_conv, grid_spacing="exponential", r0=confinement_radii_byZ[Z])
+    # titanium has the electron configuration: [Ar] 3d^3 4s^2
+    occupation = [occ for occ in occupation_numbers(Nelec)]
+    assert occupation[-1] == (5,3-1,2) # 5e in 3d
+    occupation[-1] = (3,3-1,2)     # put 3e in 3d
+    occupation.append( (2,4-1,0) ) # and 2e in 4s
+    atomdft.setOccupation(occupation)
+    atomdft.setRadialGrid(0.0000004, 16.0, 6500)
+
+    try:
+        from confined_pseudo_atoms import cr
+        atomdft.initialDensityGuess((cr.r, float(Nelec)/float(cr.Nelec) * cr.radial_density))
+        #from confined_pseudo_atoms import v
+        #atomdft.initialDensityGuess((v.r, v.radial_density))
+    except ImportError:
+        atomdft.initialDensityGuess()
+    atomdft.setEnergyRange(energy_range)
+    atomdft.solveKohnSham()
+    fh = open(orbdir + "v.py", "w")
+    atomdft.saveSolution(fh)
+    fh.close()
+    
+# test version !!!
+def chromium():
+    energy_range = list(linspace(-250.0, -200.0, 200)) \
+        + list(linspace(-200.0, -20.0, 200)) \
+        + list(linspace(-20.0, -5.0, 400)) \
+        + list(linspace(-5.0, 5.0, 200)) \
+    # equidistant grid, use larger grid for heavy atoms
+              
+    Z = 24
+    Nelec = 24
+    atomdft = PseudoAtomDFT(Z,Nelec,numerov_conv,100*en_conv, grid_spacing="exponential", r0=confinement_radii_byZ[Z])
+    # titanium has the electron configuration: [Ar] 3d^4 4s^2
+    occupation = [occ for occ in occupation_numbers(Nelec)]
+    assert occupation[-1] == (6,3-1,2) # 6e in 3d
+    occupation[-1] = (4,3-1,2)     # put 4e in 3d
+    occupation.append( (2,4-1,0) ) # and 2e in 4s
+    atomdft.setOccupation(occupation)
+    atomdft.setRadialGrid(0.0000004, 16.0, 7000)
+
+    try:
+        from confined_pseudo_atoms import mn
+        atomdft.initialDensityGuess((mn.r, float(Nelec)/float(mn.Nelec) * mn.radial_density))
+        #from confined_pseudo_atoms import cr
+        #atomdft.initialDensityGuess((cr.r, cr.radial_density))
+    except ImportError:
+        atomdft.initialDensityGuess()
+    atomdft.setEnergyRange(energy_range)
+    atomdft.solveKohnSham()
+    fh = open(orbdir + "cr.py", "w")
+    atomdft.saveSolution(fh)
+    fh.close()
+    
+# test version !!!
+def manganese():
+    energy_range = list(linspace(-300.0, -200.0, 200)) \
+        + list(linspace(-200.0, -26.0, 200)) \
+        + list(linspace(-26.0, -5.0, 400)) \
+        + list(linspace(-5.0, 5.0, 200)) \
+    # equidistant grid, use larger grid for heavy atoms
+              
+    Z = 25
+    Nelec = 25
+    atomdft = PseudoAtomDFT(Z,Nelec,numerov_conv,100*en_conv, grid_spacing="exponential", r0=confinement_radii_byZ[Z], damping=0.6)    
+    # iron has the electron configuration: [Ar] 3d^(5) 4s^2
+    occupation = [occ for occ in occupation_numbers(Nelec)]
+    assert occupation[-1] == (7,3-1,2) # 7e in 3d
+    occupation[-1] = (5,3-1,2)     # put 5e in 3d
+    occupation.append( (2,4-1,0) ) # and 2e in 4s
+    atomdft.setOccupation(occupation)
+
+    atomdft.setRadialGrid(0.0000004, 16.0, 7500)
+    try:
+        #from confined_pseudo_atoms import fe
+        #atomdft.initialDensityGuess((fe.r, float(Nelec)/float(fe.Nelec) * fe.radial_density))
+        from confined_pseudo_atoms import mn
+        atomdft.initialDensityGuess((mn.r, mn.radial_density))
+    except ImportError:
+        atomdft.initialDensityGuess()
+    atomdft.setEnergyRange(energy_range)
+    atomdft.solveKohnSham()
+    fh = open(orbdir + "mn.py", "w")
     atomdft.saveSolution(fh)
     fh.close()
     
@@ -458,13 +618,77 @@ def iron():
 
     atomdft.setRadialGrid(0.0000004, 16.0, 8000)
     try:
-        from confined_pseudo_atoms import cu
+        from confined_pseudo_atoms import fe
         atomdft.initialDensityGuess((fe.r, fe.radial_density))
     except ImportError:
         atomdft.initialDensityGuess()
     atomdft.setEnergyRange(energy_range)
     atomdft.solveKohnSham()
     fh = open(orbdir + "fe.py", "w")
+    atomdft.saveSolution(fh)
+    fh.close()
+
+# test version !!!
+def cobalt():
+    energy_range = list(linspace(-300.0, -200.0, 200)) \
+        + list(linspace(-200.0, -31.0, 200)) \
+        + list(linspace(-31.0, -7.0, 400)) \
+        + list(linspace(-7.0, 5.0, 200)) \
+    # equidistant grid, use larger grid for heavy atoms
+              
+    Z = 27
+    Nelec = 27
+    atomdft = PseudoAtomDFT(Z,Nelec,numerov_conv,100*en_conv, grid_spacing="exponential", r0=confinement_radii_byZ[Z], damping=0.6)    
+    # cobalt has the electron configuration: [Ar] 3d^(7) 4s^2
+    occupation = [occ for occ in occupation_numbers(Nelec)]
+    assert occupation[-1] == (9,3-1,2) # 9e in 3d
+    occupation[-1] = (7,3-1,2)     # put 7e in 3d
+    occupation.append( (2,4-1,0) ) # and 2e in 4s
+    atomdft.setOccupation(occupation)
+
+    atomdft.setRadialGrid(0.0000004, 16.0, 7400)
+    try:
+        from confined_pseudo_atoms import fe
+        atomdft.initialDensityGuess((fe.r, float(Nelec)/float(fe.Nelec) * fe.radial_density))
+        #from confined_pseudo_atoms import co
+        #atomdft.initialDensityGuess((co.r, co.radial_density))
+    except ImportError:
+        atomdft.initialDensityGuess()
+    atomdft.setEnergyRange(energy_range)
+    atomdft.solveKohnSham()
+    fh = open(orbdir + "co.py", "w")
+    atomdft.saveSolution(fh)
+    fh.close()
+
+# test version !!!
+def nickel():
+    energy_range = list(linspace(-350.0, -200.0, 200)) \
+        + list(linspace(-200.0, -31.6, 200)) \
+        + list(linspace(-31.6, -6.0, 400)) \
+        + list(linspace(-6.0, 5.0, 200)) \
+    # equidistant grid, use larger grid for heavy atoms
+              
+    Z = 28
+    Nelec = 28
+    atomdft = PseudoAtomDFT(Z,Nelec,numerov_conv,100*en_conv, grid_spacing="exponential", r0=confinement_radii_byZ[Z], damping=0.6)    
+    # cobalt has the electron configuration: [Ar] 3d^(9) 4s^1
+    occupation = [occ for occ in occupation_numbers(Nelec)]
+    assert occupation[-1] == (10,3-1,2) # 10e in 3d
+    occupation[-1] = (9,3-1,2)     # put 9e in 3d
+    occupation.append( (1,4-1,0) ) # and 1e in 4s
+    atomdft.setOccupation(occupation)
+    
+    atomdft.setRadialGrid(0.0000004, 20.0, 6700)
+    try:
+        from confined_pseudo_atoms import cu
+        atomdft.initialDensityGuess((cu.r, float(Nelec)/float(cu.Nelec) * cu.radial_density))
+        #from confined_pseudo_atoms import ni
+        #atomdft.initialDensityGuess((ni.r, ni.radial_density))
+    except ImportError:
+        atomdft.initialDensityGuess()
+    atomdft.setEnergyRange(energy_range)
+    atomdft.solveKohnSham()
+    fh = open(orbdir + "ni.py", "w")
     atomdft.saveSolution(fh)
     fh.close()
 
@@ -512,6 +736,110 @@ def zinc():
     atomdft.saveSolution(fh)
     fh.close()
 
+# test version !!!
+def gallium():
+    energy_range = list(linspace(-400.0, -200.0, 200)) \
+        + list(linspace(-200.0, -45.0, 200)) \
+        + list(linspace(-45.0, -8.0, 400)) \
+        + list(linspace(-8.0, -4.5, 200)) \
+        + list(linspace(-4.5, 5.0, 200)) \
+    # equidistant grid, use larger grid for heavy atoms
+              
+    Z = 31
+    Nelec = 31
+    atomdft = PseudoAtomDFT(Z,Nelec,numerov_conv,en_conv, grid_spacing="exponential", r0=confinement_radii_byZ[Z], damping=0.6)    
+    atomdft.setRadialGrid(0.0000004, 20.0, 6000)
+    try:
+        from confined_pseudo_atoms import zn
+        atomdft.initialDensityGuess((zn.r, float(Nelec)/float(zn.Nelec) * zn.radial_density))
+        #from confined_pseudo_atoms import ga
+        #atomdft.initialDensityGuess((ga.r, ga.radial_density))
+    except ImportError:
+        atomdft.initialDensityGuess()
+    atomdft.setEnergyRange(energy_range)
+    atomdft.solveKohnSham()
+    fh = open(orbdir + "ga.py", "w")
+    atomdft.saveSolution(fh)
+    fh.close()
+
+# test version !!!
+def germanium():
+    energy_range = list(linspace(-450.0, -200.0, 200)) \
+        + list(linspace(-200.0, -49.0, 200)) \
+        + list(linspace(-49.0, -9.0, 400)) \
+        + list(linspace(-9.0, -3.0, 200)) \
+        + list(linspace(-3.0, 5.0, 200)) \
+    # equidistant grid, use larger grid for heavy atoms
+              
+    Z = 32
+    Nelec = 32
+    atomdft = PseudoAtomDFT(Z,Nelec,numerov_conv,en_conv, grid_spacing="exponential", r0=confinement_radii_byZ[Z], damping=0.6)    
+    atomdft.setRadialGrid(0.0000004, 20.0, 6000)
+    try:
+        from confined_pseudo_atoms import ga
+        atomdft.initialDensityGuess((ga.r, float(Nelec)/float(ga.Nelec) * ga.radial_density))
+        #from confined_pseudo_atoms import ge
+        #atomdft.initialDensityGuess((ge.r, ge.radial_density))
+    except ImportError:
+        atomdft.initialDensityGuess()
+    atomdft.setEnergyRange(energy_range)
+    atomdft.solveKohnSham()
+    fh = open(orbdir + "ge.py", "w")
+    atomdft.saveSolution(fh)
+    fh.close()
+
+# test version !!!
+def arsenic():
+    energy_range = list(linspace(-470.0, -200.0, 200)) \
+        + list(linspace(-200.0, -53.0, 200)) \
+        + list(linspace(-53.0, -8.2, 400)) \
+        + list(linspace(-8.2, -4.5, 200)) \
+        + list(linspace(-4.5, 5.0, 200)) \
+    # equidistant grid, use larger grid for heavy atoms
+              
+    Z = 33
+    Nelec = 33
+    atomdft = PseudoAtomDFT(Z,Nelec,numerov_conv,en_conv, grid_spacing="exponential", r0=confinement_radii_byZ[Z], damping=0.6)    
+    atomdft.setRadialGrid(0.0000004, 20.0, 6000)
+    try:
+        from confined_pseudo_atoms import ge
+        atomdft.initialDensityGuess((ge.r, float(Nelec)/float(ge.Nelec) * ge.radial_density))
+        #from confined_pseudo_atoms import arsenic
+        #atomdft.initialDensityGuess((arsenic.r, arsenic.radial_density))
+    except ImportError:
+        atomdft.initialDensityGuess()
+    atomdft.setEnergyRange(energy_range)
+    atomdft.solveKohnSham()
+    fh = open(orbdir + "arsenic.py", "w")
+    atomdft.saveSolution(fh)
+    fh.close()
+
+# test version !!!
+def selenium():
+    energy_range = list(linspace(-500.0, -200.0, 200)) \
+        + list(linspace(-200.0, -57.0, 200)) \
+        + list(linspace(-57.0, -7.0, 400)) \
+        + list(linspace(-7.0, -4.0, 200)) \
+        + list(linspace(-4.0, 5.0, 200)) \
+    # equidistant grid, use larger grid for heavy atoms
+              
+    Z = 34
+    Nelec = 34
+    atomdft = PseudoAtomDFT(Z,Nelec,numerov_conv,en_conv, grid_spacing="exponential", r0=confinement_radii_byZ[Z], damping=0.6)    
+    atomdft.setRadialGrid(0.0000004, 20.0, 6000)
+    try:
+        from confined_pseudo_atoms import br
+        atomdft.initialDensityGuess((br.r, float(Nelec)/float(br.Nelec) * br.radial_density))
+        #from confined_pseudo_atoms import se
+        #atomdft.initialDensityGuess((se.r, se.radial_density))
+    except ImportError:
+        atomdft.initialDensityGuess()
+    atomdft.setEnergyRange(energy_range)
+    atomdft.solveKohnSham()
+    fh = open(orbdir + "se.py", "w")
+    atomdft.saveSolution(fh)
+    fh.close()
+
 def bromine():
     energy_range = list(linspace(-1500.0, -400.0, 200)) \
         + list(linspace(-400.0, -200.0, 200)) \
@@ -538,6 +866,300 @@ def bromine():
     atomdft.saveSolution(fh)
     fh.close()
 
+# test version !!!
+def krypton():
+    energy_range = list(linspace(-550.0, -200.0, 200)) \
+        + list(linspace(-200.0, -66.0, 200)) \
+        + list(linspace(-66.0, -8.2, 200)) \
+        + list(linspace(-8.2, -6.5, 400)) \
+        + list(linspace(-6.5, 5.0, 200)) \
+    # equidistant grid, use larger grid for heavy atoms
+              
+    Z = 36
+    Nelec = 36
+    atomdft = PseudoAtomDFT(Z,Nelec,numerov_conv,en_conv, grid_spacing="exponential", r0=confinement_radii_byZ[Z], damping=0.6)
+    # 3d-shell is closed (occupied by 10 electrons)
+    atomdft.setValenceOrbitals(["4s", "4p"], format="spectroscopic")    
+    #atomdft.setRadialGrid(0.0000004, 14.0, 10000)
+    atomdft.setRadialGrid(0.0000004, 18.0, 10000)
+    try:
+        from confined_pseudo_atoms import br
+        atomdft.initialDensityGuess((br.r, float(Nelec)/float(br.Nelec) * br.radial_density))
+        #from confined_pseudo_atoms import ky
+        #atomdft.initialDensityGuess((ky.r, ky.radial_density))
+    except ImportError:
+        atomdft.initialDensityGuess()
+    atomdft.setEnergyRange(energy_range)
+    atomdft.solveKohnSham()
+    fh = open(orbdir + "ky.py", "w")
+    atomdft.saveSolution(fh)
+    fh.close()
+
+# fifth row atoms
+rmax_5th_row = rmax_4th_row + 0.0 # increase radial grid by 0.0 bohr for 5th row atoms
+Npts_5th_row = Npts_4th_row + 1000 
+
+# test version !!!
+def rubidium():
+    energy_range = list(linspace(-135.0, -40.00, 100)) \
+                  +list(linspace(-40, -13.0, 50)) \
+                  +list(linspace(-13.0, -1.0, 200)) \
+                  +list(linspace(-1.0, -0.0001, 200))
+
+    Z = 37
+    Nelec = 37
+    atomdft = PseudoAtomDFT(Z,Nelec,numerov_conv,en_conv, grid_spacing="exponential", r0=confinement_radii_byZ[Z])
+    # in rubdium 5s is filled before 4d: [Kr] 5s^1
+    occupation = [occ for occ in occupation_numbers(Nelec)]
+    assert occupation[-1] == (1, 4-1, 2) # 1e in 4d
+    occupation[-1] = (1,5-1,0) # 1e in 5s
+    atomdft.setOccupation(occupation)
+    atomdft.setRadialGrid(rmin, rmax_5th_row, Npts_5th_row)
+    try:
+        from confined_pseudo_atoms import rb
+        atomdft.initialDensityGuess((rb.r, rb.radial_density))
+    except ImportError:
+        atomdft.initialDensityGuess()
+    atomdft.setEnergyRange(energy_range)
+    atomdft.solveKohnSham()
+    fh = open(orbdir + "rb.py", "w")
+    atomdft.saveSolution(fh)
+    fh.close()
+
+# test version !!!
+def strontium():
+    energy_range = list(linspace(-223.0, -93.00, 100)) \
+                  +list(linspace(-93, -18.0, 50)) \
+                  +list(linspace(-18.0, -2.0, 200)) \
+                  +list(linspace(-2.0, -0.0001, 200))
+
+    Z = 38
+    Nelec = 38
+    atomdft = PseudoAtomDFT(Z,Nelec,numerov_conv,en_conv, grid_spacing="exponential", r0=confinement_radii_byZ[Z])
+    # in calcium 5s is filled before 4d: [Kr] 5s^2
+    occupation = [occ for occ in occupation_numbers(Nelec)]
+    assert occupation[-1] == (1, 4-1, 2) # 1e in 4d
+    occupation[-1] = (2,5-1,0) # 2e in 5s
+    atomdft.setOccupation(occupation)
+    atomdft.setRadialGrid(rmin, rmax_5th_row, Npts_5th_row)
+    try:
+        from confined_pseudo_atoms import sr
+        atomdft.initialDensityGuess((sr.r, sr.radial_density))
+    except ImportError:
+        atomdft.initialDensityGuess()
+    atomdft.setEnergyRange(energy_range)
+    atomdft.solveKohnSham()
+    fh = open(orbdir + "sr.py", "w")
+    atomdft.saveSolution(fh)
+    fh.close()
+
+# test version !!!
+def yttrium():
+    energy_range = list(linspace(-1500.0, -800.0, 100)) \
+        + list(linspace(-800.0, -200.0, 200)) \
+        + list(linspace(-200.0, -30.0, 200)) \
+        + list(linspace(-30.0, -5.0, 400)) \
+        + list(linspace(-5.0, 5.0, 400)) \
+    # equidistant grid, use larger grid for heavy atoms
+              
+    Z = 39
+    Nelec = 39
+    atomdft = PseudoAtomDFT(Z,Nelec,numerov_conv,en_conv, grid_spacing="exponential", r0=confinement_radii_byZ[Z], damping=0.6)
+    # The electron configuration of ruthenium is  [Kr] 4d^(1) 5s^(2)
+    occupation = [occ for occ in occupation_numbers(Nelec)]
+    # `occupation` is a list of tuples
+    #   (nr.electrons, quantum number n + 1, quantum number l)
+    # that describe the occupied shells.
+    # In the default occupation, ruthenium would have the electronic configuration [Kr] 4d^(1).
+    assert occupation[-1] == (1,4-1,2) # 1e in 4d
+    # The default occupation is not correct, so we need to adjust it by
+    # removing one electron from 4d shell,
+    occupation[-1] = (1,4-1,2) # 1e in 4d
+    # and adding a 5s shell with 1 electron.
+    occupation.append( (2,5-1,0) ) # 2e in 5s
+    # The new occupation is now [Kr] 4d^(1) 5s^(2)
+    
+    atomdft.setOccupation(occupation)
+    atomdft.setValenceOrbitals(["4d", "5s"], format="spectroscopic")
+    atomdft.setRadialGrid(0.000000001, 14.0, 20000)
+    try:
+        from confined_pseudo_atoms import zr
+        atomdft.initialDensityGuess((y.r, float(Nelec)/float(y.Nelec) * y.radial_density))
+    except ImportError:
+        atomdft.initialDensityGuess()
+    atomdft.setEnergyRange(energy_range)
+    atomdft.solveKohnSham()
+    fh = open(orbdir + "y.py", "w")
+    atomdft.saveSolution(fh)
+    fh.close()    
+
+# test version !!!
+def zirconium():
+    energy_range = list(linspace(-1500.0, -800.0, 100)) \
+        + list(linspace(-800.0, -200.0, 200)) \
+        + list(linspace(-200.0, -30.0, 200)) \
+        + list(linspace(-30.0, -5.0, 400)) \
+        + list(linspace(-5.0, 5.0, 400)) \
+    # equidistant grid, use larger grid for heavy atoms
+              
+    Z = 40
+    Nelec = 40
+    atomdft = PseudoAtomDFT(Z,Nelec,numerov_conv,en_conv, grid_spacing="exponential", r0=confinement_radii_byZ[Z], damping=0.6)
+    # The electron configuration of ruthenium is  [Kr] 4d^(2) 5s^(2)
+    occupation = [occ for occ in occupation_numbers(Nelec)]
+    # `occupation` is a list of tuples
+    #   (nr.electrons, quantum number n + 1, quantum number l)
+    # that describe the occupied shells.
+    # In the default occupation, ruthenium would have the electronic configuration [Kr] 4d^(2).
+    assert occupation[-1] == (2,4-1,2) # 2e in 4d
+    # The default occupation is not correct, so we need to adjust it by
+    # removing one electron from 4d shell,
+    occupation[-1] = (2,4-1,2) # 2e in 4d
+    # and adding a 5s shell with 1 electron.
+    occupation.append( (2,5-1,0) ) # 2e in 5s
+    # The new occupation is now [Kr] 4d^(2) 5s^(2)
+    
+    atomdft.setOccupation(occupation)
+    atomdft.setValenceOrbitals(["4d", "5s"], format="spectroscopic")
+    atomdft.setRadialGrid(0.000000001, 14.0, 20000)
+    try:
+        from confined_pseudo_atoms import zr
+        atomdft.initialDensityGuess((zr.r, float(Nelec)/float(zr.Nelec) * zr.radial_density))
+    except ImportError:
+        atomdft.initialDensityGuess()
+    atomdft.setEnergyRange(energy_range)
+    atomdft.solveKohnSham()
+    fh = open(orbdir + "zr.py", "w")
+    atomdft.saveSolution(fh)
+    fh.close()    
+
+# test version !!!
+def niobium():
+    energy_range = list(linspace(-1500.0, -800.0, 100)) \
+        + list(linspace(-800.0, -200.0, 200)) \
+        + list(linspace(-200.0, -30.0, 200)) \
+        + list(linspace(-30.0, -5.0, 400)) \
+        + list(linspace(-5.0, 5.0, 400)) \
+    # equidistant grid, use larger grid for heavy atoms
+              
+    Z = 41
+    Nelec = 41
+    atomdft = PseudoAtomDFT(Z,Nelec,numerov_conv,en_conv, grid_spacing="exponential", r0=confinement_radii_byZ[Z], damping=0.6)
+    # The electron configuration of ruthenium is  [Kr] 4d^(3) 5s^(2)
+    occupation = [occ for occ in occupation_numbers(Nelec)]
+    # `occupation` is a list of tuples
+    #   (nr.electrons, quantum number n + 1, quantum number l)
+    # that describe the occupied shells.
+    # In the default occupation, ruthenium would have the electronic configuration [Kr] 4d^(3).
+    assert occupation[-1] == (3,4-1,2) # 3e in 4d
+    # The default occupation is not correct, so we need to adjust it by
+    # removing one electron from 4d shell,
+    occupation[-1] = (3,4-1,2) # 3e in 4d
+    # and adding a 5s shell with 1 electron.
+    occupation.append( (2,5-1,0) ) # qe in 5s
+    # The new occupation is now [Kr] 4d^(3) 5s^(2)
+    
+    atomdft.setOccupation(occupation)
+    atomdft.setValenceOrbitals(["4d", "5s"], format="spectroscopic")
+    atomdft.setRadialGrid(0.000000001, 14.0, 20000)
+    try:
+        from confined_pseudo_atoms import nb
+        atomdft.initialDensityGuess((nb.r, float(Nelec)/float(nb.Nelec) * nb.radial_density))
+    except ImportError:
+        atomdft.initialDensityGuess()
+    atomdft.setEnergyRange(energy_range)
+    atomdft.solveKohnSham()
+    fh = open(orbdir + "nb.py", "w")
+    atomdft.saveSolution(fh)
+    fh.close()    
+
+# test version !!!
+def molybdenium():
+    energy_range = list(linspace(-1500.0, -800.0, 100)) \
+        + list(linspace(-800.0, -200.0, 200)) \
+        + list(linspace(-200.0, -30.0, 200)) \
+        + list(linspace(-30.0, -5.0, 400)) \
+        + list(linspace(-5.0, 5.0, 400)) \
+    # equidistant grid, use larger grid for heavy atoms
+              
+    Z = 42
+    Nelec = 42
+    atomdft = PseudoAtomDFT(Z,Nelec,numerov_conv,en_conv, grid_spacing="exponential", r0=confinement_radii_byZ[Z], damping=0.6)
+    # The electron configuration of ruthenium is  [Kr] 4d^(4) 5s^(2)
+    occupation = [occ for occ in occupation_numbers(Nelec)]
+    # `occupation` is a list of tuples
+    #   (nr.electrons, quantum number n + 1, quantum number l)
+    # that describe the occupied shells.
+    # In the default occupation, ruthenium would have the electronic configuration [Kr] 4d^(4).
+    assert occupation[-1] == (4,4-1,2) # 4e in 4d
+    # The default occupation is not correct, so we need to adjust it by
+    # removing one electron from 4d shell,
+    occupation[-1] = (4,4-1,2)  # 4e in 4d
+    # and adding a 5s shell with 1 electron.
+    occupation.append( (2,5-1,0) ) # 2e in 5s
+    # The new occupation is now [Kr] 4d^(4) 5s^(2)
+    
+    atomdft.setOccupation(occupation)
+    atomdft.setValenceOrbitals(["4d", "5s"], format="spectroscopic")
+    atomdft.setRadialGrid(0.000000001, 14.0, 20000)
+    try:
+        from confined_pseudo_atoms import mo
+        atomdft.initialDensityGuess((mo.r, float(Nelec)/float(mo.Nelec) * mo.radial_density))
+    except ImportError:
+        atomdft.initialDensityGuess()
+    atomdft.setEnergyRange(energy_range)
+    atomdft.solveKohnSham()
+    fh = open(orbdir + "mo.py", "w")
+    atomdft.saveSolution(fh)
+    fh.close()    
+
+# test version !!!
+def technetium():
+    energy_range = list(linspace(-1500.0, -800.0, 100)) \
+        + list(linspace(-800.0, -200.0, 200)) \
+        + list(linspace(-200.0, -30.0, 200)) \
+        + list(linspace(-30.0, -5.0, 400)) \
+        + list(linspace(-5.0, 5.0, 400)) \
+    # equidistant grid, use larger grid for heavy atoms
+              
+    Z = 43
+    Nelec = 43
+    atomdft = PseudoAtomDFT(Z,Nelec,numerov_conv,en_conv, grid_spacing="exponential", r0=confinement_radii_byZ[Z], damping=0.6)
+    # The electron configuration of ruthenium is  [Kr] 4d^(5) 5s^(2)
+    occupation = [occ for occ in occupation_numbers(Nelec)]
+    # `occupation` is a list of tuples
+    #   (nr.electrons, quantum number n + 1, quantum number l)
+    # that describe the occupied shells.
+    # In the default occupation, technetium would have the electronic configuration [Kr] 4d^(5).
+    assert occupation[-1] == (5,4-1,2) # 5e in 4d
+    # The default occupation is not correct, so we need to adjust it by
+    # removing one electron from 4d shell,
+    occupation[-1] = (5,4-1,2) # 5e in 4d
+    # and adding a 5s shell with 1 electron.
+    occupation.append( (2,5-1,0) ) # 2e in 5s
+    # The new occupation is now [Kr] 4d^(5) 5s^(2)
+    
+    atomdft.setOccupation(occupation)
+    atomdft.setValenceOrbitals(["4d", "5s"], format="spectroscopic")
+    atomdft.setRadialGrid(0.000000001, 14.0, 20000)
+    try:
+        """
+        # If no initial density is available for Ru, we can take the density from silver 
+        # and scale it, so that it integrates to the number of electrons in ruthenium. 
+        from confined_pseudo_atoms import ag
+        atomdft.initialDensityGuess((ag.r, float(Nelec)/float(ag.Nelec) * ag.radial_density))
+        """
+        # If an initial density is available for Ru, we use that one
+        from confined_pseudo_atoms import ru
+        atomdft.initialDensityGuess((ru.r, float(Nelec)/float(ru.Nelec) * ru.radial_density))
+    except ImportError:
+        atomdft.initialDensityGuess()
+    atomdft.setEnergyRange(energy_range)
+    atomdft.solveKohnSham()
+    fh = open(orbdir + "ru.py", "w")
+    atomdft.saveSolution(fh)
+    fh.close()    
+
 def ruthenium():
     energy_range = list(linspace(-1500.0, -800.0, 100)) \
         + list(linspace(-800.0, -200.0, 200)) \
@@ -555,12 +1177,12 @@ def ruthenium():
     #   (nr.electrons, quantum number n + 1, quantum number l)
     # that describe the occupied shells.
     # In the default occupation, ruthenium would have the electronic configuration [Kr] 4d^(8).
-    assert occupation[-1] == (8,4-1,2)
+    assert occupation[-1] == (8,4-1,2) # 8e in 4d
     # The default occupation is not correct, so we need to adjust it by
     # removing one electron from 4d shell,
-    occupation[-1] = (7,4-1,2)
+    occupation[-1] = (7,4-1,2) # 7e in 4d
     # and adding a 5s shell with 1 electron.
-    occupation.append( (1,5-1,0) )
+    occupation.append( (1,5-1,0) ) # 2e in 5s
     # The new occupation is now [Kr] 4d^(7) 5s^(1)
     
     atomdft.setOccupation(occupation)
@@ -602,7 +1224,7 @@ def ruthenium_2plus():
     # that describe the occupied shells.
     # In the default occupation, ruthenium would have the electronic configuration [Kr] 4d^(6),
     # which is correct.
-    assert occupation[-1] == (6,4-1,2)
+    assert occupation[-1] == (6,4-1,2) # 6e in 4d
     
     atomdft.setOccupation(occupation)
     atomdft.setValenceOrbitals(["4d", "5s"], format="spectroscopic")
@@ -627,7 +1249,80 @@ def ruthenium_2plus():
     atomdft.saveSolution(fh)
     fh.close()    
 
+# test version !!!
+def rhodium():
+    energy_range = list(linspace(-1500.0, -800.0, 100)) \
+        + list(linspace(-800.0, -200.0, 200)) \
+        + list(linspace(-200.0, -30.0, 200)) \
+        + list(linspace(-30.0, -5.0, 400)) \
+        + list(linspace(-5.0, 5.0, 400)) \
+    # equidistant grid, use larger grid for heavy atoms
+              
+    Z = 45
+    Nelec = 45
+    atomdft = PseudoAtomDFT(Z,Nelec,numerov_conv,en_conv, grid_spacing="exponential", r0=confinement_radii_byZ[Z], damping=0.6)
+    # The electron configuration of ruthenium is  [Kr] 4d^(8) 5s^(1)
+    occupation = [occ for occ in occupation_numbers(Nelec)]
+    # `occupation` is a list of tuples
+    #   (nr.electrons, quantum number n + 1, quantum number l)
+    # that describe the occupied shells.
+    # In the default occupation, rhodium would have the electronic configuration [Kr] 4d^(8).
+    assert occupation[-1] == (8,4-1,2) # 8e in 4d
+    # The default occupation is not correct, so we need to adjust it by
+    # removing one electron from 4d shell,
+    occupation[-1] = (8,4-1,2) # 8e in 4d
+    # and adding a 5s shell with 1 electron.
+    occupation.append( (1,5-1,0) ) # 1e in 5s
+    # The new occupation is now [Kr] 4d^(7) 5s^(1)
     
+    atomdft.setOccupation(occupation)
+    atomdft.setValenceOrbitals(["4d", "5s"], format="spectroscopic")
+    atomdft.setRadialGrid(0.000000001, 14.0, 20000)
+    try:
+        from confined_pseudo_atoms import rh
+        atomdft.initialDensityGuess((rh.r, float(Nelec)/float(rh.Nelec) * rh.radial_density))
+    except ImportError:
+        atomdft.initialDensityGuess()
+    atomdft.setEnergyRange(energy_range)
+    atomdft.solveKohnSham()
+    fh = open(orbdir + "rh.py", "w")
+    atomdft.saveSolution(fh)
+    fh.close()    
+
+# test version !!!
+def pallarium():
+    energy_range = list(linspace(-1500.0, -800.0, 100)) \
+        + list(linspace(-800.0, -200.0, 200)) \
+        + list(linspace(-200.0, -30.0, 200)) \
+        + list(linspace(-30.0, -5.0, 400)) \
+        + list(linspace(-5.0, 5.0, 400)) \
+    # equidistant grid, use larger grid for heavy atoms
+              
+    Z = 46
+    Nelec = 46
+    atomdft = PseudoAtomDFT(Z,Nelec,numerov_conv,en_conv, grid_spacing="exponential", r0=confinement_radii_byZ[Z], damping=0.6)
+    # In silver the 5s is filled before 4f: [Kr] 4d^(9) 5s^1
+    occupation = [occ for occ in occupation_numbers(Nelec)]
+    assert occupation[-1] == (1,4-1,3) # 1e in 4f
+    occupation[-1] = (1,5-1,0) # 1e in 5s
+    atomdft.setOccupation(occupation)
+    # I would like to include unoccupied f orbitals in minimal basis but 
+    # sofar no Slater rules exist for f orbitals. So include 5p
+    atomdft.setValenceOrbitals(["4d", "5s","5p"], format="spectroscopic")
+    atomdft.setRadialGrid(0.000000001, 14.0, 20000)
+    try:
+        from confined_pseudo_atoms import ni
+        atomdft.initialDensityGuess((ni.r, float(Nelec)/float(ni.Nelec) * ni.radial_density))
+        #from confined_pseudo_atoms import pd
+        #atomdft.initialDensityGuess((pd.r, pd.radial_density))
+    except ImportError:
+        atomdft.initialDensityGuess()
+    atomdft.setEnergyRange(energy_range)
+    atomdft.solveKohnSham()
+    fh = open(orbdir + "pd.py", "w")
+    atomdft.saveSolution(fh)
+    fh.close()    
+
 def silver():
     energy_range = list(linspace(-1500.0, -800.0, 100)) \
         + list(linspace(-800.0, -200.0, 200)) \
@@ -641,16 +1336,18 @@ def silver():
     atomdft = PseudoAtomDFT(Z,Nelec,numerov_conv,en_conv, grid_spacing="exponential", r0=confinement_radii_byZ[Z], damping=0.6)
     # In silver the 5s is filled before 4f: [Kr] 4d^(10) 5s^1
     occupation = [occ for occ in occupation_numbers(Nelec)]
-    assert occupation[-1] == (1,4-1,3)
-    occupation[-1] = (1,5-1,0)
+    assert occupation[-1] == (1,4-1,3) # 1e in 4f
+    occupation[-1] = (1,5-1,0) # 1e in 5s
     atomdft.setOccupation(occupation)
     # I would like to include unoccupied f orbitals in minimal basis but 
     # sofar no Slater rules exist for f orbitals. So include 5p
     atomdft.setValenceOrbitals(["4d", "5s","5p"], format="spectroscopic")
     atomdft.setRadialGrid(0.000000001, 14.0, 20000)
     try:
-        from confined_pseudo_atoms import ag
-        atomdft.initialDensityGuess((ag.r, ag.radial_density))
+        from confined_pseudo_atoms import cu
+        atomdft.initialDensityGuess((cu.r, float(Nelec)/float(cu.Nelec) * cu.radial_density))
+        #from confined_pseudo_atoms import ag
+        #atomdft.initialDensityGuess((ag.r, ag.radial_density))
     except ImportError:
         atomdft.initialDensityGuess()
     atomdft.setEnergyRange(energy_range)
@@ -658,7 +1355,133 @@ def silver():
     fh = open(orbdir + "ag.py", "w")
     atomdft.saveSolution(fh)
     fh.close()    
-    
+
+# test version !!!
+def cadmium():
+    energy_range = list(linspace(-1500.0, -800.0, 100)) \
+        + list(linspace(-800.0, -200.0, 200)) \
+        + list(linspace(-200.0, -30.0, 200)) \
+        + list(linspace(-30.0, -5.0, 400)) \
+        + list(linspace(-5.0, 5.0, 400)) \
+    # equidistant grid, use larger grid for heavy atoms
+              
+    Z = 48
+    Nelec = 48
+    atomdft = PseudoAtomDFT(Z,Nelec,numerov_conv,en_conv, grid_spacing="exponential", r0=confinement_radii_byZ[Z], damping=0.6)
+    # In silver the 5s is filled before 4f: [Kr] 4d^(10) 5s^2
+    occupation = [occ for occ in occupation_numbers(Nelec)]
+    assert occupation[-1] == (1,4-1,3) # 1e in 4f
+    occupation[-1] = (2,5-1,0) # 1e in 5s
+    atomdft.setOccupation(occupation)
+    # I would like to include unoccupied f orbitals in minimal basis but 
+    # sofar no Slater rules exist for f orbitals. So include 5p
+    atomdft.setValenceOrbitals(["4d", "5s","5p"], format="spectroscopic")
+    atomdft.setRadialGrid(0.000000001, 14.0, 20000)
+    try:
+        from confined_pseudo_atoms import cd
+        atomdft.initialDensityGuess((cd.r, cd.radial_density))
+    except ImportError:
+        atomdft.initialDensityGuess()
+    atomdft.setEnergyRange(energy_range)
+    atomdft.solveKohnSham()
+    fh = open(orbdir + "cd.py", "w")
+    atomdft.saveSolution(fh)
+    fh.close()    
+
+# test version !!!
+def indium():
+    energy_range = list(linspace(-1500.0, -800.0, 100)) \
+        + list(linspace(-800.0, -200.0, 200)) \
+        + list(linspace(-200.0, -30.0, 200)) \
+        + list(linspace(-30.0, -5.0, 400)) \
+        + list(linspace(-5.0, 5.0, 400)) \
+    # equidistant grid, use larger grid for heavy atoms
+              
+    Z = 49
+    Nelec = 49
+    atomdft = PseudoAtomDFT(Z,Nelec,numerov_conv,en_conv, grid_spacing="exponential", r0=confinement_radii_byZ[Z], damping=0.6)    
+    atomdft.setRadialGrid(0.000000001, 14.0, 20000)
+    try:
+        from confined_pseudo_atoms import indium
+        atomdft.initialDensityGuess((indium.r, indium.radial_density))
+    except ImportError:
+        atomdft.initialDensityGuess()
+    atomdft.setEnergyRange(energy_range)
+    atomdft.solveKohnSham()
+    fh = open(orbdir + "indium.py", "w")
+    atomdft.saveSolution(fh)
+    fh.close()    
+
+# test version !!!
+def tin():
+    energy_range = list(linspace(-1500.0, -800.0, 100)) \
+        + list(linspace(-800.0, -200.0, 200)) \
+        + list(linspace(-200.0, -30.0, 200)) \
+        + list(linspace(-30.0, -5.0, 400)) \
+        + list(linspace(-5.0, 5.0, 400)) \
+    # equidistant grid, use larger grid for heavy atoms
+              
+    Z = 50
+    Nelec = 50
+    atomdft = PseudoAtomDFT(Z,Nelec,numerov_conv,en_conv, grid_spacing="exponential", r0=confinement_radii_byZ[Z], damping=0.6)    
+    atomdft.setRadialGrid(0.000000001, 14.0, 20000)
+    try:
+        from confined_pseudo_atoms import sn
+        atomdft.initialDensityGuess((sn.r, sn.radial_density))
+    except ImportError:
+        atomdft.initialDensityGuess()
+    atomdft.setEnergyRange(energy_range)
+    atomdft.solveKohnSham()
+    fh = open(orbdir + "sn.py", "w")
+    atomdft.saveSolution(fh)
+    fh.close()    
+
+def antimony():
+    energy_range = list(linspace(-1500.0, -400.0, 200)) \
+        + list(linspace(-400.0, -200.0, 200)) \
+        + list(linspace(-200.0, -30.0, 200)) \
+        + list(linspace(-30.0, -5.0, 400)) \
+        + list(linspace(-5.0, 5.0, 200)) \
+    # equidistant grid, use larger grid for heavy atoms
+              
+    Z = 51
+    Nelec = 51
+    atomdft = PseudoAtomDFT(Z,Nelec,numerov_conv,en_conv, grid_spacing="exponential", r0=confinement_radii_byZ[Z], damping=0.6)    
+    atomdft.setRadialGrid(0.0000004, 14.0, 10000)
+    try:
+        from confined_pseudo_atoms import sb
+        atomdft.initialDensityGuess((sb.r, sb.radial_density))
+    except ImportError:
+        atomdft.initialDensityGuess()
+    atomdft.setEnergyRange(energy_range)
+    atomdft.solveKohnSham()
+    fh = open(orbdir + "sb.py", "w")
+    atomdft.saveSolution(fh)
+    fh.close()
+
+def tellurium():
+    energy_range = list(linspace(-1500.0, -400.0, 200)) \
+        + list(linspace(-400.0, -200.0, 200)) \
+        + list(linspace(-200.0, -30.0, 200)) \
+        + list(linspace(-30.0, -5.0, 400)) \
+        + list(linspace(-5.0, 5.0, 200)) \
+    # equidistant grid, use larger grid for heavy atoms
+              
+    Z = 52
+    Nelec = 52
+    atomdft = PseudoAtomDFT(Z,Nelec,numerov_conv,en_conv, grid_spacing="exponential", r0=confinement_radii_byZ[Z], damping=0.6)    
+    atomdft.setRadialGrid(0.0000004, 14.0, 10000)
+    try:
+        from confined_pseudo_atoms import te
+        atomdft.initialDensityGuess((te.r, te.radial_density))
+    except ImportError:
+        atomdft.initialDensityGuess()
+    atomdft.setEnergyRange(energy_range)
+    atomdft.solveKohnSham()
+    fh = open(orbdir + "te.py", "w")
+    atomdft.saveSolution(fh)
+    fh.close()
+
 def iodine():
     energy_range = list(linspace(-1500.0, -400.0, 200)) \
         + list(linspace(-400.0, -200.0, 200)) \
@@ -682,13 +1505,447 @@ def iodine():
     atomdft.saveSolution(fh)
     fh.close()
 
+def xenon():
+    energy_range = list(linspace(-1500.0, -400.0, 200)) \
+        + list(linspace(-400.0, -200.0, 200)) \
+        + list(linspace(-200.0, -30.0, 200)) \
+        + list(linspace(-30.0, -5.0, 400)) \
+        + list(linspace(-5.0, 5.0, 200)) \
+    # equidistant grid, use larger grid for heavy atoms
+              
+    Z = 54
+    Nelec = 54
+    atomdft = PseudoAtomDFT(Z,Nelec,numerov_conv,en_conv, grid_spacing="exponential", r0=confinement_radii_byZ[Z], damping=0.6)    
+    atomdft.setRadialGrid(0.0000004, 14.0, 10000)
+    try:
+        from confined_pseudo_atoms import xe
+        atomdft.initialDensityGuess((xe.r, xe.radial_density))
+    except ImportError:
+        atomdft.initialDensityGuess()
+    atomdft.setEnergyRange(energy_range)
+    atomdft.solveKohnSham()
+    fh = open(orbdir + "xe.py", "w")
+    atomdft.saveSolution(fh)
+    fh.close()
+
+# sixth row atoms
+rmax_6th_row = rmax_5th_row + 0.0 # increase radial grid by 0.0 bohr for 5th row atoms
+Npts_6th_row = Npts_5th_row + 1000 
+
+# test version !!!
+def lanthanum():
+    energy_range = list(linspace(-1500.0, -800.0, 100)) \
+        + list(linspace(-800.0, -200.0, 200)) \
+        + list(linspace(-200.0, -30.0, 200)) \
+        + list(linspace(-30.0, -5.0, 400)) \
+        + list(linspace(-5.0, 5.0, 400)) \
+    # equidistant grid, use larger grid for heavy atoms
+              
+    Z = 57
+    Nelec = 57
+    atomdft = PseudoAtomDFT(Z,Nelec,numerov_conv,en_conv, grid_spacing="exponential", r0=confinement_radii_byZ[Z], damping=0.6)
+    # The electron configuration of ruthenium is  [Xe] 5d^(1) 6s^(2)
+    occupation = [occ for occ in occupation_numbers(Nelec)]
+    # `occupation` is a list of tuples
+    #   (nr.electrons, quantum number n + 1, quantum number l)
+    # that describe the occupied shells.
+    # In the default occupation, ruthenium would have the electronic configuration [Kr] 4d^(1).
+    assert occupation[-1] == (1,4-1,2) # 1e in 5d
+    # The default occupation is not correct, so we need to adjust it by
+    # removing one electron from 4d shell,
+    occupation[-1] = (1,4-1,2) # 1e in 5d
+    # and adding a 5s shell with 1 electron.
+    occupation.append( (2,5-1,0) ) # 2e in 6s
+    # The new occupation is now [Kr] 5d^(1) 6s^(2)
+    
+    atomdft.setOccupation(occupation)
+    atomdft.setValenceOrbitals(["5d", "6s"], format="spectroscopic")
+    atomdft.setRadialGrid(0.000000001, 14.0, 20000)
+    try:
+        from confined_pseudo_atoms import la
+        atomdft.initialDensityGuess((la.r, float(Nelec)/float(la.Nelec) * la.radial_density))
+    except ImportError:
+        atomdft.initialDensityGuess()
+    atomdft.setEnergyRange(energy_range)
+    atomdft.solveKohnSham()
+    fh = open(orbdir + "la.py", "w")
+    atomdft.saveSolution(fh)
+    fh.close()    
+
+# test version !!!
+def hafnium():
+    energy_range = list(linspace(-1500.0, -400.0, 200)) \
+        + list(linspace(-400.0, -200.0, 200)) \
+        + list(linspace(-200.0, -30.0, 200)) \
+        + list(linspace(-30.0, -5.0, 400)) \
+        + list(linspace(-5.0, 5.0, 200)) \
+    # equidistant grid, use larger grid for heavy atoms
+              
+    Z = 72
+    Nelec = 72
+    atomdft = PseudoAtomDFT(Z,Nelec,numerov_conv,en_conv, grid_spacing="exponential", r0=confinement_radii_byZ[Z], damping=0.6)
+    # The electron configuration of ruthenium is  [Xe] 5d^(2) 6s^(2)
+    occupation = [occ for occ in occupation_numbers(Nelec)]
+    # `occupation` is a list of tuples
+    #   (nr.electrons, quantum number n + 1, quantum number l)
+    # that describe the occupied shells.
+    # In the default occupation, hafnium would have the electronic configuration [Xe] 5d^(2).
+    assert occupation[-1] == (2,5-1,2) # 2e in 5d
+    # The default occupation is not correct, so we need to adjust it by
+    # removing one electron from 5d shell,
+    occupation[-1] = (2,5-1,2) # 2e in 5d
+    # and adding a 5s shell with 1 electron.
+    occupation.append( (2,6-1,0) ) # 2e in 6s
+    # The new occupation is now [Xe] 5d^(2) 6s^(2)
+    
+    atomdft.setOccupation(occupation)
+    atomdft.setValenceOrbitals(["5d", "6s"], format="spectroscopic")
+    atomdft.setRadialGrid(0.0000004, 14.0, 10000)
+    try:
+        from confined_pseudo_atoms import hf
+        atomdft.initialDensityGuess((hf.r, float(Nelec)/float(hf.Nelec) * hf.radial_density))
+    except ImportError:
+        atomdft.initialDensityGuess()
+    atomdft.setEnergyRange(energy_range)
+    atomdft.solveKohnSham()
+    fh = open(orbdir + "hf.py", "w")
+    atomdft.saveSolution(fh)
+    fh.close()    
+    
+# test version !!!
+def tantalum():
+    energy_range = list(linspace(-1500.0, -400.0, 200)) \
+        + list(linspace(-400.0, -200.0, 200)) \
+        + list(linspace(-200.0, -30.0, 200)) \
+        + list(linspace(-30.0, -5.0, 400)) \
+        + list(linspace(-5.0, 5.0, 200)) \
+    # equidistant grid, use larger grid for heavy atoms
+              
+    Z = 73
+    Nelec = 73
+    atomdft = PseudoAtomDFT(Z,Nelec,numerov_conv,en_conv, grid_spacing="exponential", r0=confinement_radii_byZ[Z], damping=0.6)
+    # The electron configuration of ruthenium is  [Xe] 5d^(3) 6s^(2)
+    occupation = [occ for occ in occupation_numbers(Nelec)]
+    # `occupation` is a list of tuples
+    #   (nr.electrons, quantum number n + 1, quantum number l)
+    # that describe the occupied shells.
+    # In the default occupation, tantalum would have the electronic configuration [Xe] 5d^(3).
+    assert occupation[-1] == (3,5-1,2) # 3e in 5d
+    # The default occupation is not correct, so we need to adjust it by
+    # removing one electron from 5d shell,
+    occupation[-1] = (3,5-1,2) # 3e in 5d
+    # and adding a 5s shell with 1 electron.
+    occupation.append( (2,6-1,0) ) # 2e in 6s
+    # The new occupation is now [Xe] 5d^(3) 6s^(2)
+    
+    atomdft.setOccupation(occupation)
+    atomdft.setValenceOrbitals(["5d", "6s"], format="spectroscopic")
+    atomdft.setRadialGrid(0.0000004, 14.0, 10000)
+    try:
+        from confined_pseudo_atoms import ta
+        atomdft.initialDensityGuess((ta.r, float(Nelec)/float(ta.Nelec) * ta.radial_density))
+    except ImportError:
+        atomdft.initialDensityGuess()
+    atomdft.setEnergyRange(energy_range)
+    atomdft.solveKohnSham()
+    fh = open(orbdir + "ta.py", "w")
+    atomdft.saveSolution(fh)
+    fh.close()    
+    
+# test version !!!
+def tungsten():
+    energy_range = list(linspace(-1500.0, -400.0, 200)) \
+        + list(linspace(-400.0, -200.0, 200)) \
+        + list(linspace(-200.0, -30.0, 200)) \
+        + list(linspace(-30.0, -5.0, 400)) \
+        + list(linspace(-5.0, 5.0, 200)) \
+    # equidistant grid, use larger grid for heavy atoms
+              
+    Z = 74
+    Nelec = 74
+    atomdft = PseudoAtomDFT(Z,Nelec,numerov_conv,en_conv, grid_spacing="exponential", r0=confinement_radii_byZ[Z], damping=0.6)
+    # The electron configuration of ruthenium is  [Xe] 5d^(4) 6s^(2)
+    occupation = [occ for occ in occupation_numbers(Nelec)]
+    # `occupation` is a list of tuples
+    #   (nr.electrons, quantum number n + 1, quantum number l)
+    # that describe the occupied shells.
+    # In the default occupation, tantalum would have the electronic configuration [Xe] 5d^(4).
+    assert occupation[-1] == (4,5-1,2) # 4e in 5d
+    # The default occupation is not correct, so we need to adjust it by
+    # removing one electron from 5d shell,
+    occupation[-1] = (4,5-1,2) # 4e in 5d
+    # and adding a 5s shell with 1 electron.
+    occupation.append( (2,6-1,0) ) # 2e in 6s
+    # The new occupation is now [Xe] 5d^(4) 6s^(2)
+    
+    atomdft.setOccupation(occupation)
+    atomdft.setValenceOrbitals(["5d", "6s"], format="spectroscopic")
+    atomdft.setRadialGrid(0.0000004, 14.0, 10000)
+    try:
+        from confined_pseudo_atoms import w
+        atomdft.initialDensityGuess((w.r, float(Nelec)/float(w.Nelec) * w.radial_density))
+    except ImportError:
+        atomdft.initialDensityGuess()
+    atomdft.setEnergyRange(energy_range)
+    atomdft.solveKohnSham()
+    fh = open(orbdir + "w.py", "w")
+    atomdft.saveSolution(fh)
+    fh.close()    
+    
+# test version !!!
+def rhenium():
+    energy_range = list(linspace(-1500.0, -400.0, 200)) \
+        + list(linspace(-400.0, -200.0, 200)) \
+        + list(linspace(-200.0, -30.0, 200)) \
+        + list(linspace(-30.0, -5.0, 400)) \
+        + list(linspace(-5.0, 5.0, 200)) \
+    # equidistant grid, use larger grid for heavy atoms
+              
+    Z = 75
+    Nelec = 75
+    atomdft = PseudoAtomDFT(Z,Nelec,numerov_conv,en_conv, grid_spacing="exponential", r0=confinement_radii_byZ[Z], damping=0.6)
+    # The electron configuration of ruthenium is  [Xe] 5d^(5) 6s^(2)
+    occupation = [occ for occ in occupation_numbers(Nelec)]
+    # `occupation` is a list of tuples
+    #   (nr.electrons, quantum number n + 1, quantum number l)
+    # that describe the occupied shells.
+    # In the default occupation, tantalum would have the electronic configuration [Xe] 5d^(5).
+    assert occupation[-1] == (5,5-1,2) # 5e in 5d
+    # The default occupation is not correct, so we need to adjust it by
+    # removing one electron from 5d shell,
+    occupation[-1] = (5,5-1,2) # 5e in 5d
+    # and adding a 5s shell with 1 electron.
+    occupation.append( (2,6-1,0) ) # 2e in 6s
+    # The new occupation is now [Xe] 5d^(5) 6s^(2)
+    
+    atomdft.setOccupation(occupation)
+    atomdft.setValenceOrbitals(["5d", "6s"], format="spectroscopic")
+    atomdft.setRadialGrid(0.0000004, 14.0, 10000)
+    try:
+        from confined_pseudo_atoms import re
+        atomdft.initialDensityGuess((re.r, float(Nelec)/float(re.Nelec) * re.radial_density))
+    except ImportError:
+        atomdft.initialDensityGuess()
+    atomdft.setEnergyRange(energy_range)
+    atomdft.solveKohnSham()
+    fh = open(orbdir + "re.py", "w")
+    atomdft.saveSolution(fh)
+    fh.close()    
+    
+# test version !!!
+def osmium():
+    energy_range = list(linspace(-1500.0, -400.0, 200)) \
+        + list(linspace(-400.0, -200.0, 200)) \
+        + list(linspace(-200.0, -30.0, 200)) \
+        + list(linspace(-30.0, -5.0, 400)) \
+        + list(linspace(-5.0, 5.0, 200)) \
+    # equidistant grid, use larger grid for heavy atoms
+              
+    Z = 76
+    Nelec = 76
+    atomdft = PseudoAtomDFT(Z,Nelec,numerov_conv,en_conv, grid_spacing="exponential", r0=confinement_radii_byZ[Z], damping=0.6)
+    # The electron configuration of ruthenium is  [Xe] 5d^(6) 6s^(2)
+    occupation = [occ for occ in occupation_numbers(Nelec)]
+    # `occupation` is a list of tuples
+    #   (nr.electrons, quantum number n + 1, quantum number l)
+    # that describe the occupied shells.
+    # In the default occupation, tantalum would have the electronic configuration [Xe] 5d^(6).
+    assert occupation[-1] == (6,5-1,2) # 6e in 5d
+    # The default occupation is not correct, so we need to adjust it by
+    # removing one electron from 5d shell,
+    occupation[-1] = (6,5-1,2) # 6e in 5d
+    # and adding a 5s shell with 1 electron.
+    occupation.append( (2,6-1,0) ) # 2e in 6s
+    # The new occupation is now [Xe] 5d^(6) 6s^(2)
+    
+    atomdft.setOccupation(occupation)
+    atomdft.setValenceOrbitals(["5d", "6s"], format="spectroscopic")
+    atomdft.setRadialGrid(0.0000004, 14.0, 10000)
+    try:
+        from confined_pseudo_atoms import os
+        atomdft.initialDensityGuess((os.r, float(Nelec)/float(os.Nelec) * os.radial_density))
+    except ImportError:
+        atomdft.initialDensityGuess()
+    atomdft.setEnergyRange(energy_range)
+    atomdft.solveKohnSham()
+    fh = open(orbdir + "os.py", "w")
+    atomdft.saveSolution(fh)
+    fh.close()    
+    
+# test version !!!
+def iridium():
+    energy_range = list(linspace(-1500.0, -400.0, 200)) \
+        + list(linspace(-400.0, -200.0, 200)) \
+        + list(linspace(-200.0, -30.0, 200)) \
+        + list(linspace(-30.0, -5.0, 400)) \
+        + list(linspace(-5.0, 5.0, 200)) \
+    # equidistant grid, use larger grid for heavy atoms
+              
+    Z = 77
+    Nelec = 77
+    atomdft = PseudoAtomDFT(Z,Nelec,numerov_conv,en_conv, grid_spacing="exponential", r0=confinement_radii_byZ[Z], damping=0.6)
+    # The electron configuration of ruthenium is  [Xe] 5d^(7) 6s^(2)
+    occupation = [occ for occ in occupation_numbers(Nelec)]
+    # `occupation` is a list of tuples
+    #   (nr.electrons, quantum number n + 1, quantum number l)
+    # that describe the occupied shells.
+    # In the default occupation, tantalum would have the electronic configuration [Xe] 5d^(7).
+    assert occupation[-1] == (7,5-1,2) # 7e in 5d
+    # The default occupation is not correct, so we need to adjust it by
+    # removing one electron from 5d shell,
+    occupation[-1] = (7,5-1,2) # 7e in 5d
+    # and adding a 5s shell with 1 electron.
+    occupation.append( (2,6-1,0) ) # 2e in 6s
+    # The new occupation is now [Xe] 5d^(7) 6s^(2)
+    
+    atomdft.setOccupation(occupation)
+    atomdft.setValenceOrbitals(["5d", "6s"], format="spectroscopic")
+    atomdft.setRadialGrid(0.0000004, 14.0, 10000)
+    try:
+        from confined_pseudo_atoms import ir
+        atomdft.initialDensityGuess((ir.r, float(Nelec)/float(ir.Nelec) * ir.radial_density))
+    except ImportError:
+        atomdft.initialDensityGuess()
+    atomdft.setEnergyRange(energy_range)
+    atomdft.solveKohnSham()
+    fh = open(orbdir + "ir.py", "w")
+    atomdft.saveSolution(fh)
+    fh.close()    
+    
+# test version !!!
+def platinum():
+    energy_range = list(linspace(-1500.0, -400.0, 200)) \
+        + list(linspace(-400.0, -200.0, 200)) \
+        + list(linspace(-200.0, -30.0, 200)) \
+        + list(linspace(-30.0, -5.0, 400)) \
+        + list(linspace(-5.0, 5.0, 200)) \
+    # equidistant grid, use larger grid for heavy atoms
+              
+    Z = 78
+    Nelec = 78
+    atomdft = PseudoAtomDFT(Z,Nelec,numerov_conv,en_conv, grid_spacing="exponential", r0=confinement_radii_byZ[Z], damping=0.6)
+    # The electron configuration of ruthenium is  [Xe] 5d^(8) 6s^(2)
+    occupation = [occ for occ in occupation_numbers(Nelec)]
+    # `occupation` is a list of tuples
+    #   (nr.electrons, quantum number n + 1, quantum number l)
+    # that describe the occupied shells.
+    # In the default occupation, tantalum would have the electronic configuration [Xe] 5d^(8).
+    assert occupation[-1] == (8,5-1,2) # 8e in 5d
+    # The default occupation is not correct, so we need to adjust it by
+    # removing one electron from 5d shell,
+    occupation[-1] = (8,5-1,2) # 8e in 5d
+    # and adding a 5s shell with 1 electron.
+    occupation.append( (2,6-1,0) ) # 2e in 6s
+    # The new occupation is now [Xe] 5d^(7) 6s^(2)
+    
+    atomdft.setOccupation(occupation)
+    atomdft.setValenceOrbitals(["5d", "6s"], format="spectroscopic")
+    atomdft.setRadialGrid(0.0000004, 14.0, 10000)
+    try:
+        from confined_pseudo_atoms import pt
+        atomdft.initialDensityGuess((pt.r, float(Nelec)/float(pt.Nelec) * pt.radial_density))
+    except ImportError:
+        atomdft.initialDensityGuess()
+    atomdft.setEnergyRange(energy_range)
+    atomdft.solveKohnSham()
+    fh = open(orbdir + "pt.py", "w")
+    atomdft.saveSolution(fh)
+    fh.close()    
+    
+# test version !!!
+def gold():
+    energy_range = list(linspace(-1500.0, -400.0, 200)) \
+        + list(linspace(-400.0, -200.0, 200)) \
+        + list(linspace(-200.0, -30.0, 200)) \
+        + list(linspace(-30.0, -5.0, 400)) \
+        + list(linspace(-5.0, 5.0, 200)) \
+    # equidistant grid, use larger grid for heavy atoms
+              
+    Z = 79
+    Nelec = 79
+    atomdft = PseudoAtomDFT(Z,Nelec,numerov_conv,en_conv, grid_spacing="exponential", r0=confinement_radii_byZ[Z], damping=0.6)
+    # The electron configuration of ruthenium is  [Xe] 5d^(10) 6s^(1)
+    occupation = [occ for occ in occupation_numbers(Nelec)]
+    # `occupation` is a list of tuples
+    #   (nr.electrons, quantum number n + 1, quantum number l)
+    # that describe the occupied shells.
+    # In the default occupation, tantalum would have the electronic configuration [Xe] 5d^(10).
+    assert occupation[-1] == (10,5-1,2) # 10e in 5d
+    # The default occupation is not correct, so we need to adjust it by
+    # removing one electron from 5d shell,
+    occupation[-1] = (10,5-1,2) # 10e in 5d
+    # and adding a 5s shell with 1 electron.
+    occupation.append( (1,6-1,0) ) # 1e in 6s
+    # The new occupation is now [Xe] 5d^(10) 6s^(1)
+    
+    atomdft.setOccupation(occupation)
+    atomdft.setValenceOrbitals(["5d", "6s"], format="spectroscopic")
+    atomdft.setRadialGrid(0.0000004, 14.0, 10000)
+    try:
+        from confined_pseudo_atoms import au
+        atomdft.initialDensityGuess((au.r, float(Nelec)/float(au.Nelec) * au.radial_density))
+    except ImportError:
+        atomdft.initialDensityGuess()
+    atomdft.setEnergyRange(energy_range)
+    atomdft.solveKohnSham()
+    fh = open(orbdir + "au.py", "w")
+    atomdft.saveSolution(fh)
+    fh.close()    
+    
+# test version !!!
+def lead():
+    energy_range = list(linspace(-1500.0, -800.0, 100)) \
+        + list(linspace(-800.0, -200.0, 200)) \
+        + list(linspace(-200.0, -30.0, 200)) \
+        + list(linspace(-30.0, -5.0, 400)) \
+        + list(linspace(-5.0, 5.0, 400)) \
+    # equidistant grid, use larger grid for heavy atoms
+              
+    Z = 82
+    Nelec = 82
+    atomdft = PseudoAtomDFT(Z,Nelec,numerov_conv,en_conv, grid_spacing="exponential", r0=confinement_radii_byZ[Z], damping=0.6)    
+    atomdft.setRadialGrid(0.000000001, 14.0, 20000)
+    try:
+        from confined_pseudo_atoms import pb
+        atomdft.initialDensityGuess((pb.r, pb.radial_density))
+    except ImportError:
+        atomdft.initialDensityGuess()
+    atomdft.setEnergyRange(energy_range)
+    atomdft.solveKohnSham()
+    fh = open(orbdir + "pb.py", "w")
+    atomdft.saveSolution(fh)
+    fh.close()    
+
+def bismuth():
+    energy_range = list(linspace(-1500.0, -400.0, 200)) \
+        + list(linspace(-400.0, -200.0, 200)) \
+        + list(linspace(-200.0, -30.0, 200)) \
+        + list(linspace(-30.0, -5.0, 400)) \
+        + list(linspace(-5.0, 5.0, 200)) \
+    # equidistant grid, use larger grid for heavy atoms
+              
+    Z = 83
+    Nelec = 83
+    atomdft = PseudoAtomDFT(Z,Nelec,numerov_conv,en_conv, grid_spacing="exponential", r0=confinement_radii_byZ[Z], damping=0.6)    
+    atomdft.setRadialGrid(0.0000004, 14.0, 10000)
+    try:
+        from confined_pseudo_atoms import bi
+        atomdft.initialDensityGuess((bi.r, bi.radial_density))
+    except ImportError:
+        atomdft.initialDensityGuess()
+    atomdft.setEnergyRange(energy_range)
+    atomdft.solveKohnSham()
+    fh = open(orbdir + "bi.py", "w")
+    atomdft.saveSolution(fh)
+    fh.close()
     
 if __name__ == "__main__":
     ## first row
     #hydrogen()
     #helium()
+
     ## second row
-    lithium()
+    #lithium()
     #beryllium()
     #boron()
     #carbon()
@@ -696,6 +1953,7 @@ if __name__ == "__main__":
     #oxygen()
     #fluorine()
     #neon()
+    
     ## third row
     #natrium()
     #magnesium()
@@ -705,8 +1963,97 @@ if __name__ == "__main__":
     #sulfur()
     #chlorine()
     #argon()
+    
     ## fourth row
     #potassium()
+    #calcium()
+    #scandium()
+    #titanium()
+    #vanadium()
+    #chromium()
+    #manganese()
+    #iron()
+    #cobalt()
+    #nickel()
+    #copper()
+    #zinc()
+    #gallium()
+    #germanium()
+    #arsenic()
+    #selenium()
+    #bromine()
+    #krypton()
+
+    ## fifth row
+    #rubidium()
+    #strontium()
+    #yttrium()
+    #zirconium()
+    #niobium()
+    #molybdenum()
+    #technetium()
+    #ruthenium()
+    #rhodium()
+    #palladium()
+    silver()
+    #cadmium()
+    #indium()
+    #tin()
+    #antimony()
+    #tellurium()
+    #iodine()
+    #xenon()
+    
+    ## sixth row
+    #cesium()
+    #barium()
+    #
+    ##lanthanoide
+    #lanthanum()
+    #cerium()
+    #prasedymium()
+    #neodymium()
+    #promethium()
+    #samarium()
+    #europium()
+    #gadolinium()
+    #terbium()
+    #dysprosium()
+    #holmium()
+    #erbium()
+    #thulium()
+    #ytterbium()
+    #lutetium()
+    #
+    #hafnium()
+    #tantalium()
+    #tungsten()
+    #rhenium()
+    #osmium()
+    #iridium()
+    #platinum()
+    #gold()
+    #mercury()
+    #thallium()
+    #lead()
+    #bismuth()
+    #polonium()
+    #astatine()
+    #radon()
+
+    ## seventh row
+    #francium()
+    #radium()
+    #
+    #actinoide
+    #actinium()
+    #thorium()
+    #protactinium()
+    #uranium()
+    #neptunium()
+    #plutonium()
+    #americium()
+    #curium()
 
     ## heavy atoms, for copper relativistic effects are negligible, 
     ## for silver they are small, however gold and mercury would require a relativistic treatment
