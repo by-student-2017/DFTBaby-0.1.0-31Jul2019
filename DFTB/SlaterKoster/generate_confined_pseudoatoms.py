@@ -897,11 +897,12 @@ def krypton():
 
 # test version !!!
 def rubidium():
-    energy_range = list(linspace(-530.0, -480.0, 200)) \
-        + list(linspace(-480.0, -40.0, 200)) \
-        + list(linspace(-40.0, -6.0, 200)) \
-        + list(linspace(-6.0, -5.0, 400)) \
-        + list(linspace(-5.0, 5.0, 200)) \
+    energy_range = list(linspace(-650.0, -550.0, 100)) \
+        + list(linspace(-550.0, -42.0, 200)) \
+        + list(linspace(-42.0, -7.0, 200)) \
+        + list(linspace(-7.0, -5.0, 400)) \
+        + list(linspace(-5.0, 5.0, 400)) 
+    # equidistant grid, use larger grid for heavy atoms
 
     Z = 37
     Nelec = 37
@@ -911,7 +912,7 @@ def rubidium():
     assert occupation[-1] == (1, 4-1, 2) # 1e in 4d
     occupation[-1] = (1,5-1,0) # 1e in 5s
     atomdft.setOccupation(occupation)
-    atomdft.setRadialGrid(rmin, rmax_5th_row, Npts_5th_row)
+    atomdft.setRadialGrid(0.000000001, 14.0, 20000)
     try:
         from confined_pseudo_atoms import sr
         atomdft.initialDensityGuess((sr.r, float(Nelec)/float(sr.Nelec) * sr.radial_density))
@@ -939,16 +940,16 @@ def strontium():
     atomdft = PseudoAtomDFT(Z,Nelec,numerov_conv,en_conv, grid_spacing="exponential", r0=confinement_radii_byZ[Z])
     # in strontium 5s is filled before 4d: [Kr] 5s^2
     occupation = [occ for occ in occupation_numbers(Nelec)]
-    assert occupation[-1] == (2, 4-1, 2) # 2e in 4d
-    occupation[-1] = (0,3-1,2)     # put 0e in 4d
-    occupation.append( (2,4-1,0) ) # and 2e in 4s
+    assert occupation[-1] == (2,4-1,2) # 2e in 4d
+    occupation[-1] = (0,4-1,2)     # put 0e in 4d
+    occupation.append( (2,5-1,0) ) # and 2e in 5s
     atomdft.setOccupation(occupation)
-    atomdft.setRadialGrid(rmin, rmax_5th_row, Npts_5th_row)
+    atomdft.setRadialGrid(0.000000001, 14.0, 20000)
     try:
         from confined_pseudo_atoms import y
         atomdft.initialDensityGuess((y.r, float(Nelec)/float(y.Nelec) * y.radial_density))
-        from confined_pseudo_atoms import sr
-        atomdft.initialDensityGuess((sr.r, sr.radial_density))
+        #from confined_pseudo_atoms import sr
+        #atomdft.initialDensityGuess((sr.r, sr.radial_density))
     except ImportError:
         atomdft.initialDensityGuess()
     atomdft.setEnergyRange(energy_range)
@@ -1312,6 +1313,7 @@ def palladium():
     atomdft = PseudoAtomDFT(Z,Nelec,numerov_conv,en_conv, grid_spacing="exponential", r0=confinement_radii_byZ[Z], damping=0.6)
     # In silver the 5s is filled before 4f: [Kr] 4d^(9) 5s^1
     occupation = [occ for occ in occupation_numbers(Nelec)]
+    #assert occupation[-1] == (1,4-1,3)
     assert occupation[-1] == (10,4-1,2) # 10e in 4d
     occupation[-1] = (9,4-1,2) # 9e in 4d
     occupation.append( (1,5-1,0) ) # 1e in 5s
@@ -1377,17 +1379,19 @@ def cadmium():
     Nelec = 48
     atomdft = PseudoAtomDFT(Z,Nelec,numerov_conv,en_conv, grid_spacing="exponential", r0=confinement_radii_byZ[Z], damping=0.6)
     # In silver the 5s is filled before 4f: [Kr] 4d^(10) 5s^2
-    occupation = [occ for occ in occupation_numbers(Nelec)]
-    assert occupation[-1] == (1,4-1,3) # 1e in 4f
-    occupation[-1] = (2,5-1,0) # 1e in 5s
-    atomdft.setOccupation(occupation)
+    #occupation = [occ for occ in occupation_numbers(Nelec)]
+    #assert occupation[-1] == (1,4-1,3) # 1e in 4f
+    #occupation[-1] = (2,5-1,0) # 2e in 5s
+    #atomdft.setOccupation(occupation)
     # I would like to include unoccupied f orbitals in minimal basis but 
     # sofar no Slater rules exist for f orbitals. So include 5p
-    atomdft.setValenceOrbitals(["4d", "5s","5p"], format="spectroscopic")
+    #atomdft.setValenceOrbitals(["4d", "5s","5p"], format="spectroscopic")
     atomdft.setRadialGrid(0.000000001, 14.0, 20000)
     try:
-        from confined_pseudo_atoms import cd
-        atomdft.initialDensityGuess((cd.r, cd.radial_density))
+        from confined_pseudo_atoms import ag
+        atomdft.initialDensityGuess((ag.r, float(Nelec)/float(ag.Nelec) * ag.radial_density))
+        #from confined_pseudo_atoms import cd
+        #atomdft.initialDensityGuess((cd.r, cd.radial_density))
     except ImportError:
         atomdft.initialDensityGuess()
     atomdft.setEnergyRange(energy_range)
@@ -1410,8 +1414,10 @@ def indium():
     atomdft = PseudoAtomDFT(Z,Nelec,numerov_conv,en_conv, grid_spacing="exponential", r0=confinement_radii_byZ[Z], damping=0.6)    
     atomdft.setRadialGrid(0.000000001, 14.0, 20000)
     try:
-        from confined_pseudo_atoms import indium
-        atomdft.initialDensityGuess((indium.r, indium.radial_density))
+        from confined_pseudo_atoms import cd
+        atomdft.initialDensityGuess((cd.r, float(Nelec)/float(cd.Nelec) * cd.radial_density))
+        #from confined_pseudo_atoms import indium
+        #atomdft.initialDensityGuess((indium.r, indium.radial_density))
     except ImportError:
         atomdft.initialDensityGuess()
     atomdft.setEnergyRange(energy_range)
@@ -1434,8 +1440,10 @@ def tin():
     atomdft = PseudoAtomDFT(Z,Nelec,numerov_conv,en_conv, grid_spacing="exponential", r0=confinement_radii_byZ[Z], damping=0.6)    
     atomdft.setRadialGrid(0.000000001, 14.0, 20000)
     try:
-        from confined_pseudo_atoms import sn
-        atomdft.initialDensityGuess((sn.r, sn.radial_density))
+        from confined_pseudo_atoms import sb
+        atomdft.initialDensityGuess((sb.r, float(Nelec)/float(sb.Nelec) * sb.radial_density))
+        #from confined_pseudo_atoms import sn
+        #atomdft.initialDensityGuess((sn.r, sn.radial_density))
     except ImportError:
         atomdft.initialDensityGuess()
     atomdft.setEnergyRange(energy_range)
@@ -1444,6 +1452,7 @@ def tin():
     atomdft.saveSolution(fh)
     fh.close()    
 
+# test version !!!
 def antimony():
     energy_range = list(linspace(-1500.0, -400.0, 200)) \
         + list(linspace(-400.0, -200.0, 200)) \
@@ -1457,8 +1466,10 @@ def antimony():
     atomdft = PseudoAtomDFT(Z,Nelec,numerov_conv,en_conv, grid_spacing="exponential", r0=confinement_radii_byZ[Z], damping=0.6)    
     atomdft.setRadialGrid(0.0000004, 14.0, 10000)
     try:
-        from confined_pseudo_atoms import sb
-        atomdft.initialDensityGuess((sb.r, sb.radial_density))
+        from confined_pseudo_atoms import te
+        atomdft.initialDensityGuess((te.r, float(Nelec)/float(te.Nelec) * te.radial_density))
+        #from confined_pseudo_atoms import sb
+        #atomdft.initialDensityGuess((sb.r, sb.radial_density))
     except ImportError:
         atomdft.initialDensityGuess()
     atomdft.setEnergyRange(energy_range)
@@ -1467,6 +1478,7 @@ def antimony():
     atomdft.saveSolution(fh)
     fh.close()
 
+# test version !!!
 def tellurium():
     energy_range = list(linspace(-1500.0, -400.0, 200)) \
         + list(linspace(-400.0, -200.0, 200)) \
@@ -1480,8 +1492,10 @@ def tellurium():
     atomdft = PseudoAtomDFT(Z,Nelec,numerov_conv,en_conv, grid_spacing="exponential", r0=confinement_radii_byZ[Z], damping=0.6)    
     atomdft.setRadialGrid(0.0000004, 14.0, 10000)
     try:
-        from confined_pseudo_atoms import te
-        atomdft.initialDensityGuess((te.r, te.radial_density))
+        from confined_pseudo_atoms import i
+        atomdft.initialDensityGuess((i.r, float(Nelec)/float(i.Nelec) * i.radial_density))
+        #from confined_pseudo_atoms import te
+        #atomdft.initialDensityGuess((te.r, te.radial_density))
     except ImportError:
         atomdft.initialDensityGuess()
     atomdft.setEnergyRange(energy_range)
@@ -1513,6 +1527,7 @@ def iodine():
     atomdft.saveSolution(fh)
     fh.close()
 
+# test version !!!
 def xenon():
     energy_range = list(linspace(-1500.0, -400.0, 200)) \
         + list(linspace(-400.0, -200.0, 200)) \
@@ -1555,21 +1570,23 @@ def lanthanum():
     # `occupation` is a list of tuples
     #   (nr.electrons, quantum number n + 1, quantum number l)
     # that describe the occupied shells.
-    # In the default occupation, ruthenium would have the electronic configuration [Kr] 4d^(1).
-    assert occupation[-1] == (1,4-1,2) # 1e in 5d
+    # In the default occupation, lanthanum would have the electronic configuration [Kr] 4d^(1).
+    assert occupation[-1] == (3,5-1,2) # 3e in 5d
     # The default occupation is not correct, so we need to adjust it by
-    # removing one electron from 4d shell,
-    occupation[-1] = (1,4-1,2) # 1e in 5d
-    # and adding a 5s shell with 1 electron.
+    # removing one electron from 5d shell,
+    occupation[-1] = (1,5-1,2) # 1e in 5d
+    # and adding a 6s shell with 1 electron.
     occupation.append( (2,5-1,0) ) # 2e in 6s
     # The new occupation is now [Kr] 5d^(1) 6s^(2)
     
     atomdft.setOccupation(occupation)
-    atomdft.setValenceOrbitals(["5d", "6s"], format="spectroscopic")
+    atomdft.setValenceOrbitals(["5d","6s","6p"], format="spectroscopic")
     atomdft.setRadialGrid(0.000000001, 14.0, 20000)
     try:
-        from confined_pseudo_atoms import la
-        atomdft.initialDensityGuess((la.r, float(Nelec)/float(la.Nelec) * la.radial_density))
+        from confined_pseudo_atoms import y
+        atomdft.initialDensityGuess((y.r, float(Nelec)/float(y.Nelec) * y.radial_density))
+        #from confined_pseudo_atoms import la
+        #atomdft.initialDensityGuess((la.r, la.radial_density))
     except ImportError:
         atomdft.initialDensityGuess()
     atomdft.setEnergyRange(energy_range)
@@ -1596,11 +1613,11 @@ def hafnium():
     #   (nr.electrons, quantum number n + 1, quantum number l)
     # that describe the occupied shells.
     # In the default occupation, hafnium would have the electronic configuration [Xe] 5d^(2).
-    assert occupation[-1] == (2,5-1,2) # 2e in 5d
+    assert occupation[-1] == (4,5-1,2) # 4e in 5d
     # The default occupation is not correct, so we need to adjust it by
     # removing one electron from 5d shell,
     occupation[-1] = (2,5-1,2) # 2e in 5d
-    # and adding a 5s shell with 1 electron.
+    # and adding a 6s shell with 1 electron.
     occupation.append( (2,6-1,0) ) # 2e in 6s
     # The new occupation is now [Xe] 5d^(2) 6s^(2)
     
@@ -1608,8 +1625,10 @@ def hafnium():
     atomdft.setValenceOrbitals(["5d", "6s"], format="spectroscopic")
     atomdft.setRadialGrid(0.0000004, 14.0, 10000)
     try:
-        from confined_pseudo_atoms import hf
-        atomdft.initialDensityGuess((hf.r, float(Nelec)/float(hf.Nelec) * hf.radial_density))
+        from confined_pseudo_atoms import la
+        atomdft.initialDensityGuess((la.r, float(Nelec)/float(la.Nelec) * la.radial_density))
+        #from confined_pseudo_atoms import hf
+        #atomdft.initialDensityGuess((hf.r, hf.radial_density))
     except ImportError:
         atomdft.initialDensityGuess()
     atomdft.setEnergyRange(energy_range)
@@ -1636,11 +1655,11 @@ def tantalum():
     #   (nr.electrons, quantum number n + 1, quantum number l)
     # that describe the occupied shells.
     # In the default occupation, tantalum would have the electronic configuration [Xe] 5d^(3).
-    assert occupation[-1] == (3,5-1,2) # 3e in 5d
+    assert occupation[-1] == (5,5-1,2) # 5e in 5d
     # The default occupation is not correct, so we need to adjust it by
     # removing one electron from 5d shell,
     occupation[-1] = (3,5-1,2) # 3e in 5d
-    # and adding a 5s shell with 1 electron.
+    # and adding a 6s shell with 1 electron.
     occupation.append( (2,6-1,0) ) # 2e in 6s
     # The new occupation is now [Xe] 5d^(3) 6s^(2)
     
@@ -1648,8 +1667,10 @@ def tantalum():
     atomdft.setValenceOrbitals(["5d", "6s"], format="spectroscopic")
     atomdft.setRadialGrid(0.0000004, 14.0, 10000)
     try:
-        from confined_pseudo_atoms import ta
-        atomdft.initialDensityGuess((ta.r, float(Nelec)/float(ta.Nelec) * ta.radial_density))
+        from confined_pseudo_atoms import hf
+        atomdft.initialDensityGuess((hf.r, float(Nelec)/float(hf.Nelec) * hf.radial_density))
+        #from confined_pseudo_atoms import ta
+        #atomdft.initialDensityGuess((ta.r, float(Nelec)/float(ta.Nelec) * ta.radial_density))
     except ImportError:
         atomdft.initialDensityGuess()
     atomdft.setEnergyRange(energy_range)
@@ -1676,11 +1697,11 @@ def tungsten():
     #   (nr.electrons, quantum number n + 1, quantum number l)
     # that describe the occupied shells.
     # In the default occupation, tantalum would have the electronic configuration [Xe] 5d^(4).
-    assert occupation[-1] == (4,5-1,2) # 4e in 5d
+    assert occupation[-1] == (6,5-1,2) # 6e in 5d
     # The default occupation is not correct, so we need to adjust it by
     # removing one electron from 5d shell,
     occupation[-1] = (4,5-1,2) # 4e in 5d
-    # and adding a 5s shell with 1 electron.
+    # and adding a 6s shell with 1 electron.
     occupation.append( (2,6-1,0) ) # 2e in 6s
     # The new occupation is now [Xe] 5d^(4) 6s^(2)
     
@@ -1688,8 +1709,10 @@ def tungsten():
     atomdft.setValenceOrbitals(["5d", "6s"], format="spectroscopic")
     atomdft.setRadialGrid(0.0000004, 14.0, 10000)
     try:
-        from confined_pseudo_atoms import w
-        atomdft.initialDensityGuess((w.r, float(Nelec)/float(w.Nelec) * w.radial_density))
+        from confined_pseudo_atoms import ta
+        atomdft.initialDensityGuess((ta.r, float(Nelec)/float(ta.Nelec) * ta.radial_density))
+        #from confined_pseudo_atoms import w
+        #atomdft.initialDensityGuess((w.r, float(Nelec)/float(w.Nelec) * w.radial_density))
     except ImportError:
         atomdft.initialDensityGuess()
     atomdft.setEnergyRange(energy_range)
@@ -1716,11 +1739,11 @@ def rhenium():
     #   (nr.electrons, quantum number n + 1, quantum number l)
     # that describe the occupied shells.
     # In the default occupation, tantalum would have the electronic configuration [Xe] 5d^(5).
-    assert occupation[-1] == (5,5-1,2) # 5e in 5d
+    assert occupation[-1] == (7,5-1,2) # 7e in 5d
     # The default occupation is not correct, so we need to adjust it by
     # removing one electron from 5d shell,
     occupation[-1] = (5,5-1,2) # 5e in 5d
-    # and adding a 5s shell with 1 electron.
+    # and adding a 6s shell with 1 electron.
     occupation.append( (2,6-1,0) ) # 2e in 6s
     # The new occupation is now [Xe] 5d^(5) 6s^(2)
     
@@ -1728,8 +1751,10 @@ def rhenium():
     atomdft.setValenceOrbitals(["5d", "6s"], format="spectroscopic")
     atomdft.setRadialGrid(0.0000004, 14.0, 10000)
     try:
-        from confined_pseudo_atoms import re
-        atomdft.initialDensityGuess((re.r, float(Nelec)/float(re.Nelec) * re.radial_density))
+        from confined_pseudo_atoms import w
+        atomdft.initialDensityGuess((w.r, float(Nelec)/float(w.Nelec) * w.radial_density))
+        #from confined_pseudo_atoms import re
+        #atomdft.initialDensityGuess((re.r, re.radial_density))
     except ImportError:
         atomdft.initialDensityGuess()
     atomdft.setEnergyRange(energy_range)
@@ -1756,7 +1781,7 @@ def osmium():
     #   (nr.electrons, quantum number n + 1, quantum number l)
     # that describe the occupied shells.
     # In the default occupation, tantalum would have the electronic configuration [Xe] 5d^(6).
-    assert occupation[-1] == (6,5-1,2) # 6e in 5d
+    assert occupation[-1] == (8,5-1,2) # 8e in 5d
     # The default occupation is not correct, so we need to adjust it by
     # removing one electron from 5d shell,
     occupation[-1] = (6,5-1,2) # 6e in 5d
@@ -1768,8 +1793,10 @@ def osmium():
     atomdft.setValenceOrbitals(["5d", "6s"], format="spectroscopic")
     atomdft.setRadialGrid(0.0000004, 14.0, 10000)
     try:
-        from confined_pseudo_atoms import os
-        atomdft.initialDensityGuess((os.r, float(Nelec)/float(os.Nelec) * os.radial_density))
+        from confined_pseudo_atoms import re
+        atomdft.initialDensityGuess((re.r, float(Nelec)/float(re.Nelec) * re.radial_density))
+        #from confined_pseudo_atoms import os
+        #atomdft.initialDensityGuess((os.r, os.radial_density))
     except ImportError:
         atomdft.initialDensityGuess()
     atomdft.setEnergyRange(energy_range)
@@ -1796,11 +1823,11 @@ def iridium():
     #   (nr.electrons, quantum number n + 1, quantum number l)
     # that describe the occupied shells.
     # In the default occupation, tantalum would have the electronic configuration [Xe] 5d^(7).
-    assert occupation[-1] == (7,5-1,2) # 7e in 5d
+    assert occupation[-1] == (9,5-1,2) # 9e in 5d
     # The default occupation is not correct, so we need to adjust it by
     # removing one electron from 5d shell,
     occupation[-1] = (7,5-1,2) # 7e in 5d
-    # and adding a 5s shell with 1 electron.
+    # and adding a 6s shell with 1 electron.
     occupation.append( (2,6-1,0) ) # 2e in 6s
     # The new occupation is now [Xe] 5d^(7) 6s^(2)
     
@@ -1808,8 +1835,10 @@ def iridium():
     atomdft.setValenceOrbitals(["5d", "6s"], format="spectroscopic")
     atomdft.setRadialGrid(0.0000004, 14.0, 10000)
     try:
-        from confined_pseudo_atoms import ir
-        atomdft.initialDensityGuess((ir.r, float(Nelec)/float(ir.Nelec) * ir.radial_density))
+        from confined_pseudo_atoms import os
+        atomdft.initialDensityGuess((os.r, float(Nelec)/float(os.Nelec) * os.radial_density))
+        #from confined_pseudo_atoms import ir
+        #atomdft.initialDensityGuess((ir.r, ir.radial_density))
     except ImportError:
         atomdft.initialDensityGuess()
     atomdft.setEnergyRange(energy_range)
@@ -1836,20 +1865,22 @@ def platinum():
     #   (nr.electrons, quantum number n + 1, quantum number l)
     # that describe the occupied shells.
     # In the default occupation, tantalum would have the electronic configuration [Xe] 5d^(8).
-    assert occupation[-1] == (8,5-1,2) # 8e in 5d
+    assert occupation[-1] == (10,5-1,2) # 10e in 5d
     # The default occupation is not correct, so we need to adjust it by
     # removing one electron from 5d shell,
     occupation[-1] = (8,5-1,2) # 8e in 5d
-    # and adding a 5s shell with 1 electron.
+    # and adding a 6s shell with 1 electron.
     occupation.append( (2,6-1,0) ) # 2e in 6s
     # The new occupation is now [Xe] 5d^(7) 6s^(2)
     
     atomdft.setOccupation(occupation)
-    atomdft.setValenceOrbitals(["5d", "6s"], format="spectroscopic")
+    atomdft.setValenceOrbitals(["5d","6s","6p"], format="spectroscopic")
     atomdft.setRadialGrid(0.0000004, 14.0, 10000)
     try:
-        from confined_pseudo_atoms import pt
-        atomdft.initialDensityGuess((pt.r, float(Nelec)/float(pt.Nelec) * pt.radial_density))
+        from confined_pseudo_atoms import ir
+        atomdft.initialDensityGuess((ir.r, float(Nelec)/float(ir.Nelec) * ir.radial_density))
+        #from confined_pseudo_atoms import pt
+        #atomdft.initialDensityGuess((pt.r, float(Nelec)/float(pt.Nelec) * pt.radial_density))
     except ImportError:
         atomdft.initialDensityGuess()
     atomdft.setEnergyRange(energy_range)
@@ -1876,20 +1907,19 @@ def gold():
     #   (nr.electrons, quantum number n + 1, quantum number l)
     # that describe the occupied shells.
     # In the default occupation, tantalum would have the electronic configuration [Xe] 5d^(10).
-    assert occupation[-1] == (10,5-1,2) # 10e in 5d
-    # The default occupation is not correct, so we need to adjust it by
-    # removing one electron from 5d shell,
-    occupation[-1] = (10,5-1,2) # 10e in 5d
+    #assert occupation[-1] == (10,5-1,2) # 1e in 5d
+    occupation[-1] = (1,6-1,0) # 1e in 6s
     # and adding a 5s shell with 1 electron.
-    occupation.append( (1,6-1,0) ) # 1e in 6s
     # The new occupation is now [Xe] 5d^(10) 6s^(1)
     
     atomdft.setOccupation(occupation)
-    atomdft.setValenceOrbitals(["5d", "6s"], format="spectroscopic")
+    atomdft.setValenceOrbitals(["5d","6s"], format="spectroscopic")
     atomdft.setRadialGrid(0.0000004, 14.0, 10000)
     try:
-        from confined_pseudo_atoms import au
-        atomdft.initialDensityGuess((au.r, float(Nelec)/float(au.Nelec) * au.radial_density))
+        from confined_pseudo_atoms import ag
+        atomdft.initialDensityGuess((ag.r, float(Nelec)/float(ag.Nelec) * ag.radial_density))
+        #from confined_pseudo_atoms import au
+        #atomdft.initialDensityGuess((au.r, float(Nelec)/float(au.Nelec) * au.radial_density))
     except ImportError:
         atomdft.initialDensityGuess()
     atomdft.setEnergyRange(energy_range)
@@ -1912,8 +1942,10 @@ def lead():
     atomdft = PseudoAtomDFT(Z,Nelec,numerov_conv,en_conv, grid_spacing="exponential", r0=confinement_radii_byZ[Z], damping=0.6)    
     atomdft.setRadialGrid(0.000000001, 14.0, 20000)
     try:
-        from confined_pseudo_atoms import pb
-        atomdft.initialDensityGuess((pb.r, pb.radial_density))
+        from confined_pseudo_atoms import sn
+        atomdft.initialDensityGuess((sn.r, float(Nelec)/float(sn.Nelec) * sn.radial_density))
+        #from confined_pseudo_atoms import pb
+        #atomdft.initialDensityGuess((pb.r, pb.radial_density))
     except ImportError:
         atomdft.initialDensityGuess()
     atomdft.setEnergyRange(energy_range)
@@ -1935,8 +1967,10 @@ def bismuth():
     atomdft = PseudoAtomDFT(Z,Nelec,numerov_conv,en_conv, grid_spacing="exponential", r0=confinement_radii_byZ[Z], damping=0.6)    
     atomdft.setRadialGrid(0.0000004, 14.0, 10000)
     try:
-        from confined_pseudo_atoms import bi
-        atomdft.initialDensityGuess((bi.r, bi.radial_density))
+        from confined_pseudo_atoms import sb
+        atomdft.initialDensityGuess((sb.r, float(Nelec)/float(sb.Nelec) * sb.radial_density))
+        #from confined_pseudo_atoms import bi
+        #atomdft.initialDensityGuess((bi.r, bi.radial_density))
     except ImportError:
         atomdft.initialDensityGuess()
     atomdft.setEnergyRange(energy_range)
@@ -1951,7 +1985,7 @@ if __name__ == "__main__":
     #helium()
 
     ## second row
-    #lithium()
+    lithium()
     #beryllium()
     #boron()
     #carbon()
@@ -2000,7 +2034,7 @@ if __name__ == "__main__":
     #technetium()
     #ruthenium()
     #rhodium()
-    palladium()
+    #palladium()
     #silver()
     #cadmium()
     #indium()
